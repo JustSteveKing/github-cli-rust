@@ -1,4 +1,7 @@
 use std::{env, process::exit};
+use reqwest::blocking::Client;
+use serde::Deserialize;
+
 
 fn main() {
     let mut args: env::Args = env::args();
@@ -11,7 +14,40 @@ fn main() {
         }
     };
 
-    dbg!(handle);
+    println!("Fetching GitHub Repos for {}", handle);
 
-    println!("Hello, world!");
+    let repos = get_repos(handle);
+}
+
+#[derive(Deserialize,Debug)]
+struct Repository {
+    name: String,
+    url: String,
+}
+
+fn get_repos(handle: String) -> Vec<Repository> {
+    let client = Client::new();
+
+    let response = client
+        .get(format!("https://api.github.com/users/{}/repos", handle))
+        .header("User-Agent", "Test")
+        .send();
+
+    let repos = match response {
+        Ok(d) => d,
+        Err(_) => {
+            println!("GitHub didn't like the username {}", handle);
+            exit(1);
+        }
+    };
+
+    let found_repos = match repos.json::<Vec<Repository>>() {
+        Ok(r) => r,
+        Err(_) => {
+            println!("Failed to parse response - or something like that.");
+            exit(1);
+        }
+    };
+
+    return found_repos;
 }
