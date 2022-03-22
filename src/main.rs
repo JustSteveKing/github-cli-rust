@@ -17,12 +17,16 @@ fn main() {
     println!("Fetching GitHub Repos for {}", handle);
 
     let repos = get_repos(handle);
+
+    for repo in repos {
+        println!("{}: {}", repo.name, repo.html_url);
+    }
 }
 
 #[derive(Deserialize,Debug)]
 struct Repository {
     name: String,
-    url: String,
+    html_url: String,
 }
 
 fn get_repos(handle: String) -> Vec<Repository> {
