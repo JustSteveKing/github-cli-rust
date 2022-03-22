@@ -21,3 +21,12 @@ fn main() {
         println!("{}: {}", repo.name, repo.html_url);
     }
 }
+
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn example() {
+        assert_eq!(true, true);
+    }
+}
